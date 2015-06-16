@@ -1,0 +1,9 @@
+{
+     "name": "express chat",
+     "description": "Pad - Team Q - Project",
+     "version": "0.0.2",
+     "dependencies": {
+        "express": "",
+        "socket.io": ""
+     }
+}

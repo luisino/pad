@@ -1,0 +1,260 @@
+<!DOCTYPE>
+<html lang="es">
+<head><title>PAD - Team Q - Express Chat</title>
+<script src="/socket.io/socket.io.js"></script>
+<script src="libs/jquery.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/mine.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<script>
+	var host = 'localhost';
+	//var host = '192.168.1.100';
+	//var host = '172.19.10.101'; 
+
+	var socket = io.connect('http://'+host+':8080');
+
+	// on connection to server, ask for user's name with an anonymous callback
+	socket.on('connect', function(){
+
+		var username = 'anonymouse';
+		if ( ! window.localStorage['username'] ) {
+			username = prompt("What's your name?");
+			window.localStorage.setItem( 'username', username );
+		}
+		else {
+			username = window.localStorage['username'];
+		}
+		console.log('saved username to localStorage');
+		// check if is open chat ... here
+		socket.emit('adduser', username);
+		$('#hb').html( '<b style="line-height: inherit;">'+username+'</b>' );
+		//socket.emit('addroom', prompt("What's your room?"));
+	});
+
+	// listener, whenever the server emits 'updatechat', this updates the chat body
+	socket.on('updatechat', function (username, data) {
+		$('#conversation').append('<b>'+username + ':</b> ' + data + '<br>');
+		var elem = document.getElementById('conversation');
+  		elem.scrollTop = elem.scrollHeight;
+	});
+
+	function image (from, base64Image) {
+	    $('#conversation').append($('<p>').append($('<b>').text(from+':'), '<br><img class="imgPosted" src="' + 	base64Image + '"/>'));
+		var elem = document.getElementById('conversation');
+  		elem.scrollTop = elem.scrollHeight;
+	}
+
+	function avatar (from, base64Image) {
+	    $('#avatarImg').html('<img src="' + base64Image + '" id="mainLogoImg" class="btn mainLogo2 pull-left" />');
+	}
+
+	socket.on('updateroom', function(current_room) {
+		$('#roomname').html('<div id="roomNameBack">' + current_room + '</div>');
+	});
+
+	socket.on('clearLocalStorage', function(username) {
+		if ( window.localStorage( username ) ) {
+			localStorage.removeItem( username );
+			console.log('detectado user en localStorage... and removed.');
+		}
+	});
+
+	socket.on('saveUserToLocalStorage', function(username) {
+		window.localStorage.setItem('username',username);
+	});
+
+	// listener, whenever the server emits 'updaterooms', this updates the room the client is in
+	socket.on('updateusers', function(users) {
+
+		users = JSON.parse(users);
+
+		console.log('detectado update users lado cliente');
+
+		$('#users').empty();
+		$.each(users, function(key, value) {
+			$('#users').append('<div>' + value + '</div>');
+		});
+	});
+
+	socket.on('userimage', image);
+
+	socket.on('avatarimg', avatar);
+
+	socket.on('sendedEmail', function( email ) {
+		alert('sended email to '+email);
+		$('#addUserEmail').val('');
+	});
+
+	// on load of page
+	$(function(){
+		// when the client clicks SEND
+		$('#datasend').click( function() {
+			var message = $('#data').val();
+			$('#data').val('');
+			// tell server to execute 'sendchat' and send along one parameter
+			socket.emit('sendchat', message);
+			$('#data').focus();
+		});
+
+		// when the client hits ENTER on their keyboard
+		$('#data').keypress(function(e) {
+			if(e.which == 13) {
+				$(this).blur();
+				$('#datasend').focus().click();
+				$(this).focus();
+			}
+		});
+
+		$("#ha").mouseenter(function() {
+	       $('#addAvatar').show();   
+	    });
+	    $("#ha").mouseleave(function() {
+	        $('#addAvatar').hide();
+	    });
+
+	    $('#fileInput').bind('change', function(e){
+	      var data = e.originalEvent.target.files[0];
+	      var reader = new FileReader();
+	      reader.onload = function(evt){
+	        socket.emit('avatarimg', evt.target.result);
+	      };
+	      reader.readAsDataURL(data);
+	      
+	    });
+
+	    $('#addAvatar').click( function() {
+	    	$('#fileInput').click();
+	    });
+
+	    $('#hb').html( window.localStorage['username'] );
+	    
+		//var avatarWidth = $('#mainLogoImg').width();
+	    //$('#addAvatar').css('width',avatarWidth);
+
+
+	    $('#imagefile').bind('change', function(e){
+	      var data = e.originalEvent.target.files[0];
+	      var reader = new FileReader();
+	      reader.onload = function(evt){
+	        //image('me', evt.target.result);
+	        socket.emit('userimage', evt.target.result);
+	      };
+	      reader.readAsDataURL(data);
+	      
+	    });
+	    
+	    $('#sendIMG').click( function() {
+	    	$('#imagefile').click();
+	    });
+
+	    var bloc2height = $(window).height() - 160;
+	    $('.bloc2').css('height',bloc2height);
+
+	    $( window ).resize(function() {
+			var bloc2height = $(window).height() - 160;
+	    	$('.bloc2').css('height',bloc2height);
+		});
+
+		$('#addUser').click( function() {
+			$('#addUserBox').show();
+		});
+
+		$('#closeAddUserBox').click( function() {
+			$('#addUserBox').hide();
+		});
+
+	});
+
+	function addUserToChatViaEmail() {
+		var email = $('#addUserEmail').val();
+		if ( email.trim() == '' ) {
+			alert('Enter email first...');
+		}
+		else {
+			socket.emit('sendEmail',email);
+		}
+		
+	}
+
+</script>
+
+</head>
+<body>
+
+<div class="bloc1">
+
+	<div id="ha" class="ha">
+		<div id="avatarImg" class="pull-left">
+			<img src="img/user.png" id="mainLogoImg" class="btn mainLogo2 pull-left" />
+		</div>
+		<div class="btn btn-default" id="addAvatar" style="display: none;">
+			<span class="glyphicon glyphicon-plus"></span>
+		</div>
+		<input type="file" value="Upload avatar" id="fileInput" class="fileInput" style="display: none;"/>
+		<h1 id="hb" class="hb"></h1>
+	</div>
+	<div id="hc" class="hc">
+		<center>
+			<button type="button" class="btn btn-default" id="addUser">
+				<span class="glyphicon glyphicon-plus"></span>
+			</button>
+		</center>
+	</div>
+
+
+</div>
+
+
+<div id="content" class="bloc2">
+	<div style="float:left;width:70%;height:100%;">
+		<div id="conversation"></div>
+		
+	</div>
+	<div style="float:left;width:30%;border-left:1px solid #eee;height:100%;padding:10px;overflow:scroll-y;">
+		<b>USERS</b>
+		<div id="users"></div>
+	</div>
+</div>
+
+
+<div id="bottomBox" class="bloc1">
+	<input type="text" id="data" placeholder="Type..." autofocus />
+
+	<button type="button" id="datasend" class="btn btn-success datasend">
+		<span class="glyphicon glyphicon-ok"></span>
+	</button>
+	<button type="button" id="sendIMG" class="btn btn-info datasend">
+		<span class="glyphicon glyphicon-picture"></span>
+	</button>
+	<input type="file" id="imagefile" accept="image/*" style="display: none;" >
+
+</div>
+
+<div id="addUserBox" style="display: none;">
+	<div class="centerBox">
+		<div id="closeAddUserBoxContainer">
+			<div id="closeAddUserBox" class="btn btn-default pull-right">
+				<span class="glyphicon glyphicon-remove pull-right"></span>
+			</div>
+		</div>
+		<h6>Send invitation via e-mail:</h6>
+		<form method="post" action="javascript:addUserToChatViaEmail()">
+			<input type="text" class="form-control" id="addUserEmail" placeholder="example@domain.com" required />
+			<br>
+			<input type="submit" value="Send e-mail" class="btn btn-default" />
+		</form>
+		<hr class="hr2">
+		<h6>Send invitation via sms:</h6>
+		<form method="post" action="javascript:alert('detected send sms but not implemented yet');">
+			<input type="text" class="form-control" id="addUserTel" placeholder="ej: 0034666555444" />
+			<br>
+			<input type="submit" value="Send sms" class="btn btn-default" />
+		</form>
+	</div>
+</div>
+
+
+<!-- room -->
+
+</body>
+</html>

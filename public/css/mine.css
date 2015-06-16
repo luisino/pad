@@ -1,0 +1,240 @@
+.initForm
+{
+	position: relative;
+	width: 400px;
+}
+
+.mainLogo
+{
+	position: relative;
+	width: 88px;
+	height: auto;
+}
+
+.mainLogo2
+{
+	position: absolute;
+	width: 80px;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+	border-radius: 0px;
+	z-index: 1;
+}
+
+.sitename
+{
+	position: relative;
+	float: left;
+	top: 12px;
+}
+
+.clearboth
+{
+	clear: both;
+}
+
+#bottomBox 
+{
+	position: fixed;
+	float: left;
+	left: 0px;
+	bottom: 0px;
+	border: 1px solid transparent;
+	background-color: #f7f7f7;
+}
+
+#data
+{
+	position: relative;
+	float: left;
+	width: 70%;
+	height: 100%;
+	font-size: 20px;
+	text-indent: 15px;
+	border: 0px solid transparent;
+}
+
+.datasend
+{
+	position: relative;
+	float: left;
+	width: 15%;
+	height: 100%;
+	font-size: 20px;
+	border: 0px solid transparent;
+}
+
+.bloc1
+{
+	position: relative;
+	float: left;
+	width: 100%;
+	height: 80px;
+	margin: 0px;
+	border: 0px solid #eee;
+}
+
+.bloc2
+{
+	position: relative;
+	float: left;
+	width: 100%;
+	height: 80%;
+	margin: 0px;
+	border: 0px solid #eee;
+	font-size: 20px;
+	background-color: rgba(143, 155, 242, 0.5); /* #8f9bf2; */
+}
+
+.ha
+{
+	position: relative;
+	float: left;
+	width: 70%;
+	height: 100%;
+	border: 0px;
+    line-height: inherit;
+}
+
+.hb
+{
+	position: relative;
+	float: left;
+	margin-left: 90px;
+	border: 0px;
+    line-height: inherit;
+}
+
+.hc
+{
+	position: relative;
+	float: left;
+	width: 30%;
+	height: 100%;
+	border: 0px;
+	font-size: 20px;
+	text-indent: 15px;
+    line-height: inherit;
+}
+
+.glyphicon
+{
+    line-height: inherit;
+}
+
+.fileInput
+{
+	position: relative;
+	float: left;
+	width: 100px;
+}
+
+#addUser
+{
+	position: relative;
+	float: left;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	font-size: 20px;
+	background-color: transparent;
+}
+
+#addUser:hover
+{
+	position: relative;
+	float: left;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%; 
+	font-size: 20px;
+	background-color: #eee;
+}
+
+#addUserBox
+{
+	position: fixed;
+	float: left;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	border: 0px solid transparent;
+	background-color: rgba(255, 255, 255, 0.6);
+	z-index: 999999;
+}
+
+#closeAddUserBoxContainer
+{
+	position: relative;
+	float: left;
+	width: 100%;
+	height: 30px;
+	clear: both;
+}
+
+.centerBox
+{
+	position: absolute;
+	width: 340px;
+	height: 340px;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	margin: auto;
+	background-color: rgba(143, 155, 242, 1);
+	z-index: 99999999;
+	box-shadow: 0px 0px 20px #aaa;
+	padding: 20px;
+	text-align: center;
+	vertical-align: inherit;
+}
+
+#addAvatar
+{
+	position: absolute;
+	float: left;
+	top: 0px;
+	left: 0px;
+	width: 80px;
+	height: 100%;
+	font-size: 20px;
+	z-index: 2;
+	opacity: 0.5;
+}
+
+#conversation
+{
+	position: relative;
+	overflow: auto;
+	float: left;
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+}
+
+.imgPosted
+{
+	position: relative;
+	float: left;
+	width: 100%;
+	height: auto;
+	border: 0px solid transparent;
+}
+
+* 
+{ 
+	border-radius: 0px !important; 
+	-webkit-border-radius: 0px !important; 
+	-moz-border-radius: 0px !important; 
+	-ms-border-radius: 0px !important; 
+	-o-border-radius: 0px !important; 
+	border-color: #f7f7f7 !important;
+}

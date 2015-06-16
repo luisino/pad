@@ -1,0 +1,164 @@
+<!DOCTYPE>
+<html lang="es">
+<head><title>PAD - Team Q - Express Chat</title>
+<script src="/socket.io/socket.io.js"></script>
+<script src="libs/jquery.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/mine.css">
+<script>
+	var host = 'localhost';
+	//var host = '192.168.1.100';
+	//var host = '172.19.10.101'; 
+
+	var socket = io.connect('http://'+host+':8080');
+
+	// on connection to server, ask for user's name with an anonymous callback
+	socket.on('connect', function(){
+		// check if is open chat ... here
+		//socket.emit('adduser', prompt("What's your name?"));
+		//socket.emit('addroom', prompt("What's your room?"));
+		socket.emit('checkToken', window.localStorage['token'] );
+	});
+
+	// listener, whenever the server emits 'updatechat', this updates the chat body
+	socket.on('updatechat', function (username, data) {
+		$('#conversation').append('<b>'+username + ':</b> ' + data + '<br>');
+	});
+
+	socket.on('updateroom', function(current_room) {
+		$('#roomname').html('<div id="roomNameBack">' + current_room + '</div>');
+	});
+
+	socket.on('updateLink', function(link) {
+		$('#link').html('Join chat now to <a href="'+link+'">' + link + '</a>');
+	});
+
+	// listener, whenever the server emits 'updaterooms', this updates the room the client is in
+	socket.on('updateusers', function(users) {
+
+		users = JSON.parse(users);
+
+		console.log('detectado update users lado cliente');
+
+		$('#users').empty();
+		$.each(users, function(key, value) {
+			$('#users').append('<div>' + value + '</div>');
+		});
+	});
+
+	function switchRoom(room){
+		socket.emit('switchRoom', room);
+	}
+	
+	function createChat() {
+		var roomname = $('#roomname-ini').val();
+		var email = $('#email').val(); // TODO: check email
+		if ( roomname.trim() != '' ) {
+
+			$('#initBox').hide();
+			$('#info').show();
+			var userData = {
+				'roomname': roomname,
+				'email': email
+			};
+			//socket.emit( 'adduser', username, roomname );
+			socket.emit( 'createChat', userData );
+			window.localStorage.setItem('roomname',roomname);
+		}
+		else {
+			alert('Insertar los datos... :D');
+		}
+	}
+	
+	socket.on('setToken', function(token) {
+		window.localStorage.setItem('token',token);
+	});
+
+	// on load of page
+	$(function(){
+		// when the client clicks SEND
+		$('#datasend').click( function() {
+			var message = $('#data').val();
+			$('#data').val('');
+			// tell server to execute 'sendchat' and send along one parameter
+			socket.emit('sendchat', message);
+		});
+
+		// when the client hits ENTER on their keyboard
+		$('#data').keypress(function(e) {
+			if(e.which == 13) {
+				$(this).blur();
+				$('#datasend').focus().click();
+			}
+		});
+
+		if ( window.localStorage['token'] && window.localStorage['token'] != '-1' ) {
+			var token = window.localStorage['token'];
+			var url = './'+token;
+			$('#gotourl').html('You have an opened chat at: <a href="'+url+'">'+url+'</a>');
+		}
+
+		$( "#roomname-ini" ).keyup(function() {
+			var roomname = $(this).val();
+			console.log('keyup roomname: ' + roomname);
+			socket.emit( 'checkRoomname', roomname );
+		});
+	});
+
+</script>
+</head>
+<body>
+
+
+<h1 class="panel-default">
+	<a href="./">
+		<img src="img/logo.png" class="btn mainLogo pull-left" />
+		<b class="sitename pull-left">Express Chat</b>
+	</a>
+</h1>
+
+<div id="content" class="container">
+	<center><br><br><br><div id="link"></div></center>
+</div>
+
+<center>
+
+<div id="initBox">
+
+	<h4 class="alert alert-info text-center">
+		Welcome to Express Chat!
+		<br><br>
+		Choose your room name!
+		<br><br>
+		Once created the chat room you can add new participants.
+	</h4>
+
+	<br><br>
+
+	<div class="panel-default">
+		<form method="post" action="javascript:createChat()" class="table table-default initForm">
+			<label class="pull-left">Room Name: </label>
+			<input type="text" id="roomname-ini" placeholder="Room Name... " autofocus class="form-control" />
+			<br><br>
+			<label class="pull-left">Invite anothers user to join chat via E-mail: </label><input type="text" id="email" placeholder="e-mail... " class="form-control" />
+			<br><br>
+			<input type="submit" value="Join Chat" class="btn btn-default" />
+		</form>
+	</div>
+
+	<center>
+		<br><br>
+		<br><br>
+		<div id="gotourl"></div>
+	</center>
+
+</div>
+
+	<br>
+	<div id="info" style="display: none;">Keep this link to re-open this chat room!</div>
+</center>
+
+<!-- index -->
+
+</body>
+</html>

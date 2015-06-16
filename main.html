@@ -1,0 +1,60 @@
+<!DOCTYPE>
+<html lang="es">
+<head><title>PAD - Team Q - Express Chat</title>
+<script src="/socket.io/socket.io.js"></script>
+<script src="libs/jquery.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<script>
+	var host = 'localhost';
+	//var host = '192.168.1.100';
+	//var host = '172.19.10.101'; 
+
+	var socket = io.connect('http://'+host+':8080');
+
+
+	// on connection to server, ask for user's name with an anonymous callback
+	socket.on('connect', function(){
+		// check if is open chat ... here
+		//socket.emit('adduser', prompt("What's your name?"));
+		//socket.emit('addroom', prompt("What's your room?"));
+	});
+
+	function joinChat() {
+		var roomname = $('#roomname').val();
+		var username = $('#username').val();
+		if ( roomname.trim() != '' && username.trim() != '' ) {
+			socket.emit( 'adduser', username, roomname );
+			window.localStorage.setItem(roomname,1)
+		}
+		else {
+			alert('Insertar los datos...');
+		}
+	}
+	
+
+</script>
+
+</head>
+<body>
+
+	<h1>main file</h1>
+
+<center>
+
+<div id="initBox">
+	<h1>Express Chat</h1>
+	<form method="post" action="javascript:joinChat()" class="formInit">
+		Room Name: <input type="text" id="roomname" placeholder="Room Name... " autofocus />
+		<br><br>
+		User Name: <input type="text" id="username" placeholder="User Name... " />
+		<br><br>
+		<input type="submit" value="Join Chat"/>
+	</form>
+</div>
+
+</center>
+
+<!-- main -->
+
+</body>
+</html>
